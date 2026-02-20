@@ -1,15 +1,17 @@
 import { useState, useMemo } from 'react'
 import { motion } from 'framer-motion'
 import { useNavigate } from 'react-router-dom'
-import { Plus, LayoutDashboard, Zap } from 'lucide-react'
+import { Plus, LayoutDashboard, Zap, LogOut } from 'lucide-react'
 import PlanetButton from './components/PlanetButton'
 import CreateWorldModal from './components/CreateWorldModal'
 import WorldTransition from '@/components/ui/WorldTransition'
 import { useWorldStore } from '@/stores/useWorldStore'
+import { useAuth } from '@/hooks/useAuth'
 
 export default function GodView() {
   const navigate = useNavigate()
   const { worlds, tasks, moons, updateGodViewState } = useWorldStore()
+  const { signOut } = useAuth()
   const [showCreateModal, setShowCreateModal] = useState(false)
   const [transitionWorld, setTransitionWorld] = useState<{ id: string; name: string; color: string } | null>(null)
 
@@ -105,6 +107,15 @@ export default function GodView() {
               className="p-2.5 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 active:bg-white/15 transition-colors"
             >
               <LayoutDashboard className="w-4.5 h-4.5 text-white/70" />
+            </button>
+
+            {/* Sign out */}
+            <button
+              onClick={signOut}
+              className="p-2.5 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 active:bg-white/15 transition-colors"
+              title="Sign out"
+            >
+              <LogOut className="w-4.5 h-4.5 text-white/70" />
             </button>
 
             {/* Create world */}
