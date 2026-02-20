@@ -18,7 +18,7 @@ import {
 import { Filter, SortAsc, CheckCircle2, Circle, Clock, AlertCircle } from 'lucide-react'
 import { useWorldStore } from '@/stores/useWorldStore'
 import TaskItem from './TaskItem'
-import type { Task, TaskStatus, TaskPriority } from '@/types'
+import type { Task, TaskPriority } from '@/types'
 
 interface TaskListProps {
   worldId: string

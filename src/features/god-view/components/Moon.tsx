@@ -217,7 +217,7 @@ export default function Moon({
       {/* Moon body with detailed surface */}
       <mesh 
         ref={moonRef} 
-        onClick={(e) => {
+        onClick={(e: { stopPropagation: () => void }) => {
           e.stopPropagation()
           onClick?.()
         }}

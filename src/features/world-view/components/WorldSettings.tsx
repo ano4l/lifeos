@@ -1,8 +1,8 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { 
-  X, Settings, Trash2, Edit3, Save, AlertTriangle, 
-  Palette, Sparkles, Brain, Globe, Check
+  X, Settings, Trash2, Save, AlertTriangle, 
+  Palette, Brain, Check
 } from 'lucide-react'
 import type { World, AIPersonality, SurfaceTexture, WorldType } from '@/types'
 

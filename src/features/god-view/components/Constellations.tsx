@@ -107,7 +107,7 @@ export default function Constellations({ opacity = 0.6 }: ConstellationsProps) {
           z * data.scale + data.offset[2]
         )
       ),
-      connections: data.connections,
+      connections: data.connections as [number, number][],
       position: new THREE.Vector3(...data.offset),
       scale: data.scale,
     }))

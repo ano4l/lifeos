@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion'
-import { Calendar, Clock } from 'lucide-react'
+import { Calendar } from 'lucide-react'
 import { format, addDays, isToday, isTomorrow, startOfDay } from 'date-fns'
 import type { Task } from '@/types'
 

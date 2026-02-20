@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { X, Briefcase, Rocket, Book, Heart, Palette, Users, Code, Music, Gamepad, Home, Globe, Star, Sparkles, ChevronRight, ChevronLeft } from 'lucide-react'
+import { X, Briefcase, Rocket, Book, Heart, Palette, Users, Code, Music, Gamepad, Home, Globe, Star } from 'lucide-react'
 import { useWorldStore } from '@/stores/useWorldStore'
 import type { World, WorldIcon, SurfaceTexture, AIPersonality, WorldType } from '@/types'
 

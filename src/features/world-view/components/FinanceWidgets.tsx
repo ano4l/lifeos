@@ -173,7 +173,7 @@ function ExpandedChart({ data, symbol, isPositive }: { data: WidgetData; symbol:
 // Individual widget card
 function WidgetCard({ 
   widget, 
-  worldColor, 
+  worldColor: _worldColor, 
   onRemove 
 }: { 
   widget: WidgetData

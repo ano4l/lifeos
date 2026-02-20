@@ -1,5 +1,5 @@
 import { motion, useReducedMotion } from 'framer-motion'
-import { Zap, TrendingUp, TrendingDown, Settings2, BarChart3, AlertTriangle } from 'lucide-react'
+import { Zap, TrendingUp, Settings2, BarChart3, AlertTriangle } from 'lucide-react'
 import { useState, useMemo, memo } from 'react'
 
 interface EnergyGaugeProps {

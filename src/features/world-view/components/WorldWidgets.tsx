@@ -3,14 +3,10 @@ import { motion, AnimatePresence, useReducedMotion } from 'framer-motion'
 import { 
   Code2, Heart, BookOpen, Users, Gamepad2, Palette,
   GitBranch, Activity, Brain, MessageCircle, Trophy, Brush,
-  Plus, X, ChevronDown, ChevronUp, Settings, Target, Flame,
-  TrendingUp, Clock, Calendar, Award, Zap, Coffee, Dumbbell,
-  Moon, Sun, Droplet, Star, GitPullRequest, GitCommit,
-  Code, Terminal, Database, Cloud, Server, Cpu,
-  Music, Video, Image, FileText, PenTool, Sparkles,
-  GraduationCap, BookMark, BrainCircuit, Lightbulb,
-  UserCheck, Bell, CalendarDays, MessageSquare,
-  Joystick, Medal, Settings2, BarChart3, RefreshCw, Eye, EyeOff
+  X, Settings, Flame,
+  Moon, Droplet,
+  Code, Server,
+  Settings2
 } from 'lucide-react'
 import type { WorldType } from '@/types'
 
@@ -19,19 +15,10 @@ interface WorldWidgetsProps {
   worldColor: string
 }
 
-interface WidgetConfig {
-  id: string
-  title: string
-  icon: React.ReactNode
-  isVisible: boolean
-  refreshRate: number
-  size: 'small' | 'medium' | 'large'
-}
-
 const WidgetCard = memo(({ 
   children, 
   className = '', 
-  worldColor,
+  worldColor: _worldColor,
   onRemove,
   onSettings,
   isCustomizable = true
@@ -89,11 +76,11 @@ WidgetCard.displayName = 'WidgetCard'
 
 const DevelopmentWidgets = memo(({ worldColor }: { worldColor: string }) => {
   const shouldReduceMotion = useReducedMotion()
-  const [expandedWidget, setExpandedWidget] = useState<string | null>(null)
+  const [_expandedWidget, _setExpandedWidget] = useState<string | null>(null)
   const [githubUsername, setGithubUsername] = useState('')
   const [focusGoal, setFocusGoal] = useState(6)
   const [showSettings, setShowSettings] = useState<Record<string, boolean>>({})
-  const [widgetVisibility, setWidgetVisibility] = useState({
+  const [widgetVisibility, _setWidgetVisibility] = useState({
     github: true,
     focus: true,
     code: true,
