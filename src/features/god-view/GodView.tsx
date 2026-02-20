@@ -77,7 +77,7 @@ export default function GodView() {
       />
 
       {/* Header */}
-      <header className="sticky top-0 z-30 backdrop-blur-xl border-b border-white/8"
+      <header className="sticky top-0 z-30 backdrop-blur-xl border-b border-white/8 safe-area-top"
         style={{
           background: 'linear-gradient(180deg, rgba(5,5,8,0.95) 0%, rgba(5,5,8,0.85) 100%)',
         }}

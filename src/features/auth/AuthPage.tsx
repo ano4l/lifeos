@@ -36,7 +36,7 @@ export default function AuthPage() {
 
   return (
     <div
-      className="min-h-screen min-h-[100dvh] flex items-center justify-center px-4"
+      className="min-h-screen min-h-[100dvh] flex items-center justify-center px-4 safe-area-all"
       style={{ background: '#050508' }}
     >
       {/* Background glow */}
