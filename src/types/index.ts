@@ -82,6 +82,23 @@ export interface NotebookEntry {
   updatedAt: string
 }
 
+export interface Moon {
+  id: string
+  parentWorldId: string
+  name: string
+  description?: string
+  colorTheme: string
+  icon: WorldIcon
+  taskCount: number
+  urgentTaskCount: number
+  completedToday: number
+  energyUsed: number
+  energyLimit: number
+  notebookEntries?: NotebookEntry[]
+  createdAt: string
+  updatedAt: string
+}
+
 export type AIPersonality = 'manager' | 'coach' | 'strategist' | 'mentor' | 'analyst'
 
 export type AITone = 'professional' | 'friendly' | 'direct' | 'encouraging' | 'calm'

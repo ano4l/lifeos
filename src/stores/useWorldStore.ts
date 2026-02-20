@@ -1,11 +1,13 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
-import type { World, Task, CriticalUpdate, GodViewState } from '@/types'
+import type { World, Task, Moon, CriticalUpdate, GodViewState } from '@/types'
 import { nanoid } from 'nanoid'
 
 interface WorldState {
   worlds: World[]
   tasks: Record<string, Task[]>
+  moons: Moon[]
+  moonTasks: Record<string, Task[]>
   criticalUpdates: CriticalUpdate[]
   godViewState: GodViewState
   currentWorldId: string | null
@@ -21,6 +23,17 @@ interface WorldState {
   deleteTask: (worldId: string, taskId: string) => void
   reorderTasks: (worldId: string, taskIds: string[]) => void
   getTasksByWorld: (worldId: string) => Task[]
+  
+  addMoon: (moon: Omit<Moon, 'id' | 'createdAt' | 'updatedAt'>) => Moon
+  updateMoon: (id: string, updates: Partial<Moon>) => void
+  deleteMoon: (id: string) => void
+  getMoon: (id: string) => Moon | undefined
+  getMoonsByWorld: (worldId: string) => Moon[]
+  
+  addMoonTask: (moonId: string, task: Omit<Task, 'id' | 'createdAt' | 'updatedAt' | 'order'>) => Task
+  updateMoonTask: (taskId: string, updates: Partial<Task>) => void
+  deleteMoonTask: (moonId: string, taskId: string) => void
+  getMoonTasks: (moonId: string) => Task[]
   
   setCurrentWorld: (worldId: string | null) => void
   updateGodViewState: (updates: Partial<GodViewState>) => void
@@ -44,6 +57,8 @@ export const useWorldStore = create<WorldState>()(
     (set, get) => ({
       worlds: [],
       tasks: {},
+      moons: [],
+      moonTasks: {},
       criticalUpdates: [],
       godViewState: defaultGodViewState,
       currentWorldId: null,
@@ -179,6 +194,98 @@ export const useWorldStore = create<WorldState>()(
         }))
       },
 
+      // Moon CRUD
+      addMoon: (moonData) => {
+        const now = new Date().toISOString()
+        const newMoon: Moon = {
+          ...moonData,
+          id: nanoid(),
+          createdAt: now,
+          updatedAt: now,
+        }
+        set((state) => ({
+          moons: [...state.moons, newMoon],
+          moonTasks: { ...state.moonTasks, [newMoon.id]: [] },
+        }))
+        return newMoon
+      },
+
+      updateMoon: (id, updates) => {
+        set((state) => ({
+          moons: state.moons.map((m) =>
+            m.id === id ? { ...m, ...updates, updatedAt: new Date().toISOString() } : m
+          ),
+        }))
+      },
+
+      deleteMoon: (id) => {
+        set((state) => {
+          const { [id]: _, ...remainingTasks } = state.moonTasks
+          return {
+            moons: state.moons.filter((m) => m.id !== id),
+            moonTasks: remainingTasks,
+          }
+        })
+      },
+
+      getMoon: (id) => get().moons.find((m) => m.id === id),
+
+      getMoonsByWorld: (worldId) => get().moons.filter((m) => m.parentWorldId === worldId),
+
+      addMoonTask: (moonId, taskData) => {
+        const now = new Date().toISOString()
+        const moonTasksList = get().moonTasks[moonId] || []
+        const newTask: Task = {
+          ...taskData,
+          id: nanoid(),
+          order: moonTasksList.length,
+          createdAt: now,
+          updatedAt: now,
+        }
+        set((state) => ({
+          moonTasks: {
+            ...state.moonTasks,
+            [moonId]: [...(state.moonTasks[moonId] || []), newTask],
+          },
+        }))
+        const moon = get().getMoon(moonId)
+        if (moon) {
+          get().updateMoon(moonId, {
+            taskCount: (moon.taskCount || 0) + 1,
+            urgentTaskCount: taskData.priority === 'urgent'
+              ? (moon.urgentTaskCount || 0) + 1
+              : moon.urgentTaskCount,
+          })
+        }
+        return newTask
+      },
+
+      updateMoonTask: (taskId, updates) => {
+        set((state) => {
+          const newTasks = { ...state.moonTasks }
+          for (const moonId in newTasks) {
+            newTasks[moonId] = newTasks[moonId].map((t) =>
+              t.id === taskId ? { ...t, ...updates, updatedAt: new Date().toISOString() } : t
+            )
+          }
+          return { moonTasks: newTasks }
+        })
+      },
+
+      deleteMoonTask: (moonId, taskId) => {
+        set((state) => ({
+          moonTasks: {
+            ...state.moonTasks,
+            [moonId]: state.moonTasks[moonId]?.filter((t) => t.id !== taskId) || [],
+          },
+        }))
+      },
+
+      getMoonTasks: (moonId) => {
+        const tasks = get().moonTasks[moonId] || []
+        return [...tasks].sort((a, b) => a.order - b.order)
+      },
+
       dismissCriticalUpdate: (id) => {
         set((state) => ({
           criticalUpdates: state.criticalUpdates.map((u) =>
@@ -192,6 +299,8 @@ export const useWorldStore = create<WorldState>()(
       partialize: (state) => ({
         worlds: state.worlds,
         tasks: state.tasks,
+        moons: state.moons,
+        moonTasks: state.moonTasks,
         currentWorldId: state.currentWorldId,
       }),
     }

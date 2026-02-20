@@ -2,8 +2,8 @@ import { useMemo } from 'react'
 import { motion } from 'framer-motion'
 import { useNavigate } from 'react-router-dom'
 import { 
-  ArrowLeft, Target, TrendingUp, Zap, Clock, CheckCircle2, 
-  AlertTriangle, Calendar, BarChart3, Activity
+  ArrowLeft, Target, TrendingUp, Zap, CheckCircle2, 
+  AlertTriangle, Activity
 } from 'lucide-react'
 import { useWorldStore } from '@/stores/useWorldStore'
 import LightLeak from '@/components/ui/LightLeak'
@@ -95,45 +95,31 @@ export default function DashboardView() {
         accentColor="rgba(150, 100, 255, 0.15)"
       />
 
-      {/* Header */}
-      <motion.header
-        initial={{ y: -50, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        className="sticky top-0 z-40 backdrop-blur-2xl border-b border-white/10"
+      {/* Header - mobile-first */}
+      <header
+        className="sticky top-0 z-40 backdrop-blur-xl border-b border-white/8"
         style={{
-          background: 'linear-gradient(180deg, rgba(100, 150, 255, 0.1) 0%, rgba(10, 10, 20, 0.95) 100%)',
+          background: 'linear-gradient(180deg, rgba(5,5,8,0.95) 0%, rgba(5,5,8,0.85) 100%)',
         }}
       >
-        <div className="max-w-7xl mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <button
-                onClick={() => navigate('/')}
-                className="p-2 rounded-xl hover:bg-white/10 transition-colors group"
-              >
-                <ArrowLeft className="w-5 h-5 text-muted-foreground group-hover:text-white transition-colors" />
-              </button>
-              
-              <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
-                  <BarChart3 className="w-6 h-6 text-white" />
-                </div>
-                <div>
-                  <h1 className="font-display text-xl font-bold text-white">
-                    Command Center
-                  </h1>
-                  <p className="text-sm text-muted-foreground">
-                    All worlds overview
-                  </p>
-                </div>
-              </div>
+        <div className="px-4 py-3 safe-area-x">
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => navigate('/')}
+              className="p-2 -ml-1 rounded-xl hover:bg-white/10 active:bg-white/15 transition-colors"
+            >
+              <ArrowLeft className="w-5 h-5 text-white/60" />
+            </button>
+            <div>
+              <h1 className="text-base sm:text-lg font-bold text-white">Dashboard</h1>
+              <p className="text-xs text-white/40">All worlds overview</p>
             </div>
           </div>
         </div>
-      </motion.header>
+      </header>
 
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 py-6">
+      <main className="max-w-7xl mx-auto px-4 py-4 sm:py-6 safe-area-x">
         {/* Stats Grid */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
           <StatCard

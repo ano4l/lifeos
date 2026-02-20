@@ -5,6 +5,7 @@ import LoadingScreen from '@/components/ui/LoadingScreen'
 
 const GodView = lazy(() => import('@/features/god-view/GodView'))
 const WorldView = lazy(() => import('@/features/world-view/WorldView'))
+const MoonView = lazy(() => import('@/features/moon-view/MoonView'))
 const DashboardView = lazy(() => import('@/features/dashboard/DashboardView'))
 
 export default function App() {
@@ -15,6 +16,7 @@ export default function App() {
           <Routes>
             <Route path="/" element={<GodView />} />
             <Route path="/world/:worldId" element={<WorldView />} />
+            <Route path="/world/:worldId/moon/:moonId" element={<MoonView />} />
             <Route path="/dashboard" element={<DashboardView />} />
           </Routes>
         </Suspense>

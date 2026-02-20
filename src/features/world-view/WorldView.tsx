@@ -1,6 +1,6 @@
 import { useParams, useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
-import { ArrowLeft, Plus, Settings, Zap, Moon, Sparkles, Target, TrendingUp, Clock, LayoutDashboard, Menu, Globe } from 'lucide-react'
+import { ArrowLeft, Plus, Settings, LayoutDashboard, Globe, Moon } from 'lucide-react'
 import { useWorldStore } from '@/stores/useWorldStore'
 import TaskList from './components/TaskList'
 import Timeline from './components/Timeline'
@@ -11,6 +11,7 @@ import FinanceWidgets from './components/FinanceWidgets'
 import WorldWidgets from './components/WorldWidgets'
 import Notebook from './components/Notebook'
 import WorldSettings from './components/WorldSettings'
+import CreateMoonModal from './components/CreateMoonModal'
 import LightLeak from '@/components/ui/LightLeak'
 import WorldExitTransition from '@/components/ui/WorldExitTransition'
 import { useState, useMemo } from 'react'
@@ -19,24 +20,25 @@ import type { NotebookEntry } from '@/types'
 export default function WorldView() {
   const { worldId } = useParams<{ worldId: string }>()
   const navigate = useNavigate()
-  const { getWorld, getTasksByWorld, updateGodViewState, updateWorld, deleteWorld, worlds } = useWorldStore()
+  const { getWorld, getTasksByWorld, getMoonsByWorld, moonTasks, updateGodViewState, updateWorld, deleteWorld, worlds } = useWorldStore()
   const world = worldId ? getWorld(worldId) : undefined
   const [showQuickAdd, setShowQuickAdd] = useState(false)
-  const [activeSection, setActiveSection] = useState<string | null>(null)
-  const [showSectionManager, setShowSectionManager] = useState(false)
+  const [_activeSection, _setActiveSection] = useState<string | null>(null)
+  const [_showSectionManager, _setShowSectionManager] = useState(false)
   const [showSettings, setShowSettings] = useState(false)
   const [showWorldMenu, setShowWorldMenu] = useState(false)
+  const [showCreateMoon, setShowCreateMoon] = useState(false)
   const [notebookEntries, setNotebookEntries] = useState<NotebookEntry[]>(world?.notebookEntries || [])
 
-  // Animated background particles
+  // Animated background particles - reduced count for mobile perf
   const bgParticles = useMemo(() => {
-    return Array.from({ length: 20 }, (_, i) => ({
+    return Array.from({ length: 8 }, (_, i) => ({
       id: i,
       x: Math.random() * 100,
       y: Math.random() * 100,
-      size: 2 + Math.random() * 4,
-      duration: 15 + Math.random() * 20,
-      delay: Math.random() * 10,
+      size: 2 + Math.random() * 3,
+      duration: 20 + Math.random() * 15,
+      delay: Math.random() * 8,
     }))
   }, [])
   const tasks = worldId ? getTasksByWorld(worldId) : []
@@ -129,213 +131,73 @@ export default function WorldView() {
           background: `radial-gradient(ellipse at 50% 0%, ${world.colorTheme}15 0%, transparent 50%)`,
         }}
       />
-      {/* Header with enhanced glassmorphism */}
-      <motion.header
-        initial={{ y: -50, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.5, ease: 'easeOut' }}
-        className="sticky top-0 z-40 backdrop-blur-2xl border-b border-white/10"
+      {/* Header - mobile-first, clean */}
+      <header
+        className="sticky top-0 z-40 backdrop-blur-xl border-b border-white/8"
         style={{
-          background: `linear-gradient(180deg, ${world.colorTheme}15 0%, rgba(10, 10, 20, 0.9) 100%)`,
-          boxShadow: `0 4px 30px ${world.colorTheme}20, inset 0 1px 0 rgba(255,255,255,0.1)`,
+          background: `linear-gradient(180deg, rgba(5,5,8,0.95) 0%, rgba(5,5,8,0.85) 100%)`,
         }}
       >
-        <div className="max-w-7xl mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            {/* Left side - Back & World Info */}
-            <div className="flex items-center gap-4">
+        <div className="px-4 py-3 safe-area-x">
+          <div className="flex items-center justify-between gap-2">
+            {/* Left - Back & World Info */}
+            <div className="flex items-center gap-3 min-w-0 flex-1">
               <button
                 onClick={handleBackToGalaxy}
-                className="p-2 rounded-xl hover:bg-white/10 transition-colors group"
+                className="p-2 -ml-1 rounded-xl hover:bg-white/10 active:bg-white/15 transition-colors flex-shrink-0"
               >
-                <ArrowLeft className="w-5 h-5 text-muted-foreground group-hover:text-white transition-colors" />
+                <ArrowLeft className="w-5 h-5 text-white/60" />
               </button>
               
-              <div className="flex items-center gap-3">
-                <motion.div
-                  className="w-14 h-14 rounded-2xl flex items-center justify-center relative"
-                  style={{ 
-                    background: `linear-gradient(135deg, ${world.colorTheme}, ${world.colorTheme}80)`,
-                    boxShadow: `0 0 30px ${world.colorTheme}50`,
-                  }}
-                  animate={{
-                    boxShadow: [
-                      `0 0 20px ${world.colorTheme}30`,
-                      `0 0 40px ${world.colorTheme}50`,
-                      `0 0 20px ${world.colorTheme}30`,
-                    ],
-                  }}
-                  transition={{ duration: 3, repeat: Infinity }}
-                >
-                  <span className="text-2xl font-bold text-white">
-                    {world.name.charAt(0).toUpperCase()}
-                  </span>
-                  {/* Orbital ring decoration */}
-                  <motion.div
-                    className="absolute inset-[-4px] rounded-2xl border-2 border-white/20"
-                    animate={{ rotate: 360 }}
-                    transition={{ duration: 20, repeat: Infinity, ease: 'linear' }}
-                    style={{ borderRadius: '18px' }}
-                  />
-                </motion.div>
-                <div>
-                  <h1 className="font-display text-xl font-bold text-white flex items-center gap-2">
-                    {world.name}
-                    <Sparkles className="w-4 h-4 text-yellow-400 opacity-70" />
-                  </h1>
-                  <div className="flex items-center gap-3 text-sm text-muted-foreground">
-                    <span className="flex items-center gap-1">
-                      <Target className="w-3 h-3" /> {pendingTasks.length} pending
-                    </span>
-                    <span className="flex items-center gap-1">
-                      <TrendingUp className="w-3 h-3" /> {completedTasks.length} done
-                    </span>
-                  </div>
+              <div
+                className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
+                style={{ 
+                  background: `linear-gradient(135deg, ${world.colorTheme}, ${world.colorTheme}80)`,
+                }}
+              >
+                <span className="text-lg font-bold text-white">
+                  {world.name.charAt(0).toUpperCase()}
+                </span>
+              </div>
+              <div className="min-w-0">
+                <h1 className="text-base font-bold text-white truncate">{world.name}</h1>
+                <div className="flex items-center gap-2 text-xs text-white/40">
+                  <span>{pendingTasks.length} pending</span>
+                  <span>&middot;</span>
+                  <span>{completedTasks.length} done</span>
                 </div>
               </div>
             </div>
 
-            {/* Center - Energy Indicator */}
-            <div className="flex-1 flex items-center justify-center">
-              <motion.div 
-                className="hidden sm:flex items-center gap-2 px-4 py-2.5 rounded-xl backdrop-blur-md"
-                style={{
-                  background: 'linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05))',
-                  border: '1px solid rgba(255,255,255,0.15)',
-                  boxShadow: '0 4px 15px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.1)',
-                }}
-                whileHover={{ scale: 1.02 }}
-              >
-                <motion.div
-                  animate={{ rotate: [0, 15, -15, 0] }}
-                  transition={{ duration: 2, repeat: Infinity }}
-                >
-                  <Zap className="w-4 h-4 text-yellow-400" />
-                </motion.div>
-                <span className="text-sm font-medium text-white">
-                  {world.energyUsed}/{world.energyLimit}
-                </span>
-                {/* Energy bar mini */}
-                <div className="w-16 h-1.5 bg-white/10 rounded-full overflow-hidden">
-                  <motion.div
-                    className="h-full rounded-full"
-                    style={{ backgroundColor: world.colorTheme }}
-                    initial={{ width: 0 }}
-                    animate={{ width: `${(world.energyUsed / world.energyLimit) * 100}%` }}
-                    transition={{ duration: 1, delay: 0.5 }}
-                  />
-                </div>
-              </motion.div>
-            </div>
-
-            {/* Center - Energy Indicator */}
-            <div className="flex-1 flex items-center justify-center">
-              <motion.div 
-                className="hidden sm:flex items-center gap-2 px-4 py-2.5 rounded-xl backdrop-blur-md"
-                style={{
-                  background: 'linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05))',
-                  border: '1px solid rgba(255,255,255,0.15)',
-                  boxShadow: '0 4px 15px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.1)',
-                }}
-                whileHover={{ scale: 1.02 }}
-              >
-                <motion.div
-                  animate={{ rotate: [0, 15, -15, 0] }}
-                  transition={{ duration: 2, repeat: Infinity }}
-                >
-                  <Zap className="w-4 h-4 text-yellow-400" />
-                </motion.div>
-                <span className="text-sm font-medium text-white">
-                  {world.energyUsed}/{world.energyLimit}
-                </span>
-                {/* Energy bar mini */}
-                <div className="w-16 h-1.5 bg-white/10 rounded-full overflow-hidden">
-                  <motion.div
-                    className="h-full rounded-full"
-                    style={{ backgroundColor: world.colorTheme }}
-                    initial={{ width: 0 }}
-                    animate={{ width: `${(world.energyUsed / world.energyLimit) * 100}%` }}
-                    transition={{ duration: 1, delay: 0.5 }}
-                  />
-                </div>
-              </motion.div>
-            </div>
-
-            {/* Right side - Actions */}
-            <div className="flex items-center gap-4">
-              {/* Sections/Moons Button */}
-              {world.sections && world.sections.length > 0 && (
-                <motion.button
-                  onClick={() => setShowSectionManager(!showSectionManager)}
-                  className="hidden sm:flex items-center gap-2 px-4 py-2.5 rounded-xl backdrop-blur-md"
-                  style={{
-                    background: showSectionManager 
-                      ? `linear-gradient(135deg, ${world.colorTheme}40, ${world.colorTheme}20)`
-                      : 'linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05))',
-                    border: '1px solid rgba(255,255,255,0.15)',
-                  }}
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                >
-                  <Moon className="w-4 h-4 text-white/80" />
-                  <span className="text-sm font-medium text-white">
-                    {world.sections.length} Sections
-                  </span>
-                </motion.button>
-              )}
-
-              {/* Add Task Button - Enhanced */}
-              <motion.button
+            {/* Right - Compact actions */}
+            <div className="flex items-center gap-1.5 flex-shrink-0">
+              {/* Add Task */}
+              <button
                 onClick={() => setShowQuickAdd(true)}
-                className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-white font-medium relative overflow-hidden"
+                className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-white text-sm font-medium active:scale-95 transition-all"
                 style={{
                   background: `linear-gradient(135deg, ${world.colorTheme}, ${world.colorTheme}cc)`,
-                  boxShadow: `0 4px 20px ${world.colorTheme}40`,
                 }}
-                whileHover={{ 
-                  scale: 1.05,
-                  boxShadow: `0 6px 30px ${world.colorTheme}60`,
-                }}
-                whileTap={{ scale: 0.95 }}
               >
-                <motion.div
-                  className="absolute inset-0 bg-white/20"
-                  initial={{ x: '-100%' }}
-                  whileHover={{ x: '100%' }}
-                  transition={{ duration: 0.5 }}
-                />
-                <Plus className="w-4 h-4 relative z-10" />
-                <span className="hidden sm:inline relative z-10">Add Task</span>
-              </motion.button>
-
-              {/* Dashboard Button */}
-              <motion.button
-                onClick={() => navigate('/dashboard')}
-                className="p-2 rounded-xl hover:bg-white/10 transition-colors group"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                title="View Dashboard"
-              >
-                <LayoutDashboard className="w-5 h-5 text-muted-foreground group-hover:text-white transition-colors" />
-              </motion.button>
+                <Plus className="w-4 h-4" />
+                <span className="hidden sm:inline">Add Task</span>
+              </button>
 
               {/* Settings */}
-              <motion.button
+              <button
                 onClick={() => setShowSettings(true)}
-                className="p-2 rounded-xl hover:bg-white/10 transition-colors group"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
+                className="p-2.5 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 active:bg-white/15 transition-colors"
               >
-                <Settings className="w-5 h-5 text-muted-foreground group-hover:text-white transition-colors" />
-              </motion.button>
+                <Settings className="w-4 h-4 text-white/60" />
+              </button>
             </div>
           </div>
         </div>
-      </motion.header>
+      </header>
 
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 py-6">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <main className="max-w-7xl mx-auto px-4 py-4 sm:py-6 safe-area-x">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
           {/* Left Column - Tasks */}
           <div className="lg:col-span-2 space-y-6">
             {/* Urgent Tasks Alert */}
@@ -373,6 +235,84 @@ export default function WorldView() {
             {world.worldType && world.worldType !== 'finance' && world.worldType !== 'general' && (
               <WorldWidgets worldType={world.worldType} worldColor={world.colorTheme} />
             )}
+
+            {/* Moons Section */}
+            {worldId && (() => {
+              const moons = getMoonsByWorld(worldId)
+              return (
+                <div className="rounded-xl border border-white/8 bg-white/3 p-4">
+                  <div className="flex items-center justify-between mb-3">
+                    <h3 className="text-sm font-semibold text-white flex items-center gap-2">
+                      <Moon className="w-4 h-4 text-white/50" />
+                      Moons
+                      {moons.length > 0 && (
+                        <span className="text-xs text-white/30 font-normal">({moons.length})</span>
+                      )}
+                    </h3>
+                    <button
+                      onClick={() => setShowCreateMoon(true)}
+                      className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-medium text-white/60 hover:text-white hover:bg-white/10 active:bg-white/15 transition-all"
+                    >
+                      <Plus className="w-3.5 h-3.5" />
+                      Add
+                    </button>
+                  </div>
+
+                  {moons.length === 0 ? (
+                    <div className="text-center py-6">
+                      <Moon className="w-8 h-8 text-white/10 mx-auto mb-2" />
+                      <p className="text-xs text-white/25">No moons yet</p>
+                      <p className="text-xs text-white/15 mt-1">Moons are sub-worlds for focused areas</p>
+                    </div>
+                  ) : (
+                    <div className="space-y-2">
+                      {moons.map((m) => {
+                        const mTasks = moonTasks[m.id] || []
+                        const mPending = mTasks.filter(t => t.status !== 'completed').length
+                        const mCompleted = mTasks.filter(t => t.status === 'completed').length
+                        const mTotal = mTasks.length
+
+                        return (
+                          <button
+                            key={m.id}
+                            onClick={() => navigate(`/world/${worldId}/moon/${m.id}`)}
+                            className="w-full flex items-center gap-3 p-3 rounded-xl bg-white/5 hover:bg-white/8 border border-white/5 hover:border-white/10 transition-all text-left group"
+                          >
+                            <div
+                              className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0"
+                              style={{ background: `linear-gradient(135deg, ${m.colorTheme}, ${m.colorTheme}80)` }}
+                            >
+                              <span className="text-xs font-bold text-white">
+                                {m.name.charAt(0).toUpperCase()}
+                              </span>
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <p className="text-sm font-medium text-white truncate">{m.name}</p>
+                              <div className="flex items-center gap-2 text-xs text-white/35">
+                                <span>{mPending} pending</span>
+                                {mCompleted > 0 && <span>&middot; {mCompleted} done</span>}
+                              </div>
+                            </div>
+                            {/* Mini progress */}
+                            {mTotal > 0 && (
+                              <div className="w-10 h-1.5 bg-white/10 rounded-full overflow-hidden flex-shrink-0">
+                                <div
+                                  className="h-full rounded-full"
+                                  style={{
+                                    backgroundColor: m.colorTheme,
+                                    width: `${Math.round((mCompleted / mTotal) * 100)}%`,
+                                  }}
+                                />
+                              </div>
+                            )}
+                          </button>
+                        )
+                      })}
+                    </div>
+                  )}
+                </div>
+              )
+            })()}
           </div>
 
           {/* Right Column - Stats & Timeline */}
@@ -487,6 +427,16 @@ export default function WorldView() {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Create Moon Modal */}
+      {worldId && (
+        <CreateMoonModal
+          isOpen={showCreateMoon}
+          onClose={() => setShowCreateMoon(false)}
+          parentWorldId={worldId}
+          parentWorldColor={world.colorTheme}
+        />
+      )}
 
       {/* World Settings Modal */}
       <WorldSettings

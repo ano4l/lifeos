@@ -133,6 +133,23 @@
 }
 
 @layer utilities {
+  /* Mobile safe areas */
+  .safe-area-x {
+    padding-left: env(safe-area-inset-left, 0px);
+    padding-right: env(safe-area-inset-right, 0px);
+  }
+  .safe-area-top {
+    padding-top: env(safe-area-inset-top, 0px);
+  }
+  .safe-area-bottom {
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+
+  /* Prevent iOS tap highlight */
+  .no-tap-highlight {
+    -webkit-tap-highlight-color: transparent;
+  }
+
   .text-glow {
     text-shadow: 0 0 10px currentColor, 0 0 20px currentColor;
   }
